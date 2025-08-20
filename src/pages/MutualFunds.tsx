@@ -13,6 +13,7 @@ import {
   PieChart,
   Target
 } from "lucide-react";
+import { useMutualFunds } from "@/hooks/useMutualFunds";
 
 const fundCategories = [
   { name: "All Funds", count: 156 },
@@ -26,166 +27,6 @@ const fundCategories = [
 const riskLevels = ["Low", "Medium", "High"];
 const durations = ["1+ month", "6+ months", "1+ year", "3+ years", "5+ years"];
 
-const allFunds = [
-  {
-    tradingsymbol: "INF00XX01135",
-    amc: "ITI MUTUAL FUND_MF",
-    name: "ITI Multi Cap Fund",
-    purchase_allowed: "0",
-    redemption_allowed: "1",
-    minimum_purchase_amount: "1000.0",
-    purchase_amount_multiplier: "1.0",
-    minimum_additional_purchase_amount: "1000.0",
-    minimum_redemption_quantity: "0.001",
-    redemption_quantity_multiplier: "0.001",
-    dividend_type: "growth",
-    scheme_type: "Equity",
-    plan: "regular",
-    settlement_type: "T2",
-    last_price: "23.2105",
-    last_price_date: "2025-08-05",
-    // Legacy fields for compatibility
-    type: "Multi Cap Equity",
-    risk: "Medium" as const,
-    duration: "3+ years",
-    expectedReturn: 12.8,
-    minInvestment: 1000,
-    tags: ["Growth Fund", "Multi Cap"],
-    rating: 4.2,
-    nav: 23.21
-  },
-  {
-    tradingsymbol: "INF077A01024",
-    amc: "AXIS MUTUAL FUND",
-    name: "Axis Bluechip Fund",
-    purchase_allowed: "1",
-    redemption_allowed: "1",
-    minimum_purchase_amount: "500.0",
-    purchase_amount_multiplier: "1.0",
-    minimum_additional_purchase_amount: "500.0",
-    minimum_redemption_quantity: "0.001",
-    redemption_quantity_multiplier: "0.001",
-    dividend_type: "growth",
-    scheme_type: "Equity",
-    plan: "regular",
-    settlement_type: "T2",
-    last_price: "54.2314",
-    last_price_date: "2025-08-05",
-    type: "Large Cap Equity",
-    risk: "Medium" as const,
-    duration: "3+ years",
-    expectedReturn: 12.8,
-    minInvestment: 500,
-    tags: ["Top Performing", "Tax Saver"],
-    rating: 4.5,
-    nav: 54.23
-  },
-  {
-    tradingsymbol: "INF179K01158",
-    amc: "HDFC MUTUAL FUND",
-    name: "HDFC Small Cap Fund",
-    purchase_allowed: "1",
-    redemption_allowed: "1",
-    minimum_purchase_amount: "1000.0",
-    purchase_amount_multiplier: "1.0",
-    minimum_additional_purchase_amount: "1000.0",
-    minimum_redemption_quantity: "0.001",
-    redemption_quantity_multiplier: "0.001",
-    dividend_type: "growth",
-    scheme_type: "Equity",
-    plan: "regular",
-    settlement_type: "T2",
-    last_price: "89.6789",
-    last_price_date: "2025-08-05",
-    type: "Small Cap Equity", 
-    risk: "High" as const,
-    duration: "5+ years",
-    expectedReturn: 15.2,
-    minInvestment: 1000,
-    tags: ["High Growth", "Trending Now"],
-    rating: 4.2,
-    nav: 89.67
-  },
-  {
-    tradingsymbol: "INF200K01212",
-    amc: "SBI MUTUAL FUND",
-    name: "SBI Liquid Fund",
-    purchase_allowed: "1",
-    redemption_allowed: "1",
-    minimum_purchase_amount: "100.0",
-    purchase_amount_multiplier: "1.0",
-    minimum_additional_purchase_amount: "100.0",
-    minimum_redemption_quantity: "0.001",
-    redemption_quantity_multiplier: "0.001",
-    dividend_type: "growth",
-    scheme_type: "Debt",
-    plan: "regular",
-    settlement_type: "T1",
-    last_price: "4567.8912",
-    last_price_date: "2025-08-05",
-    type: "Liquid Fund",
-    risk: "Low" as const,
-    duration: "1+ month",
-    expectedReturn: 6.5,
-    minInvestment: 100,
-    tags: ["Low Risk", "Emergency Fund"],
-    rating: 4.0,
-    nav: 4567.89
-  },
-  {
-    tradingsymbol: "INF109K01319",
-    amc: "ICICI PRUDENTIAL MUTUAL FUND",
-    name: "ICICI Prudential Balanced Advantage Fund",
-    purchase_allowed: "1",
-    redemption_allowed: "1",
-    minimum_purchase_amount: "1000.0",
-    purchase_amount_multiplier: "1.0",
-    minimum_additional_purchase_amount: "1000.0",
-    minimum_redemption_quantity: "0.001",
-    redemption_quantity_multiplier: "0.001",
-    dividend_type: "growth",
-    scheme_type: "Hybrid",
-    plan: "regular",
-    settlement_type: "T2",
-    last_price: "45.7823",
-    last_price_date: "2025-08-05",
-    type: "Hybrid Fund",
-    risk: "Medium" as const,
-    duration: "3+ years",
-    expectedReturn: 10.5,
-    minInvestment: 1000,
-    tags: ["Balanced", "Conservative"],
-    rating: 4.1,
-    nav: 45.78
-  },
-  {
-    tradingsymbol: "INF090I01239",
-    amc: "MIRAE ASSET MUTUAL FUND",
-    name: "Mirae Asset Large Cap Fund",
-    purchase_allowed: "1",
-    redemption_allowed: "1",
-    minimum_purchase_amount: "500.0",
-    purchase_amount_multiplier: "1.0",
-    minimum_additional_purchase_amount: "500.0",
-    minimum_redemption_quantity: "0.001",
-    redemption_quantity_multiplier: "0.001",
-    dividend_type: "growth",
-    scheme_type: "Equity",
-    plan: "regular",
-    settlement_type: "T2",
-    last_price: "76.4512",
-    last_price_date: "2025-08-05",
-    type: "Large Cap Equity",
-    risk: "Medium" as const,
-    duration: "3+ years",
-    expectedReturn: 11.8,
-    minInvestment: 500,
-    tags: ["Consistent", "Top Rated"],
-    rating: 4.3,
-    nav: 76.45
-  }
-];
-
 export default function MutualFunds() {
   const [selectedCategory, setSelectedCategory] = useState("All Funds");
   const [selectedRisk, setSelectedRisk] = useState<string[]>([]);
@@ -193,7 +34,11 @@ export default function MutualFunds() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
-  const [selectedFundForComparison, setSelectedFundForComparison] = useState<typeof allFunds[0] | null>(null);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(12);
+
+  const { data, isLoading, isError } = useMutualFunds({ page, size });
+  const funds = data?.content ?? [];
 
   const toggleRisk = (risk: string) => {
     setSelectedRisk(prev => 
@@ -210,17 +55,6 @@ export default function MutualFunds() {
         : [...prev, duration]
     );
   };
-
-  const filteredFunds = allFunds.filter(fund => {
-    const matchesSearch = fund.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         fund.type.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRisk = selectedRisk.length === 0 || selectedRisk.includes(fund.risk);
-    const matchesDuration = selectedDuration.length === 0 || selectedDuration.includes(fund.duration);
-    const matchesCategory = selectedCategory === "All Funds" || 
-                           fund.type.toLowerCase().includes(selectedCategory.toLowerCase());
-    
-    return matchesSearch && matchesRisk && matchesDuration && matchesCategory;
-  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -344,7 +178,7 @@ export default function MutualFunds() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Funds</p>
-                <p className="font-semibold text-foreground">{filteredFunds.length} Available</p>
+                <p className="font-semibold text-foreground">{data?.totalElements ?? 0} Available</p>
               </div>
             </div>
           </Card>
@@ -365,44 +199,66 @@ export default function MutualFunds() {
         {/* Results */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-foreground mb-4">
-            {selectedCategory} ({filteredFunds.length} funds)
+            {selectedCategory} ({data?.numberOfElements ?? 0} funds)
           </h2>
         </div>
 
-        {/* Fund Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredFunds.map((fund, index) => (
-            <FundCard
-              key={index}
-              {...fund}
-              onCompare={() => {
-                setSelectedFundForComparison(fund);
-                setShowComparison(true);
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Fund Comparison Modal */}
-        <FundComparison
-          isOpen={showComparison}
-          onClose={() => {
-            setShowComparison(false);
-            setSelectedFundForComparison(null);
-          }}
-          selectedFund={selectedFundForComparison}
-          allFunds={allFunds}
-        />
-
-        {filteredFunds.length === 0 && (
+        {/* Loading / Error */}
+        {isLoading && (
           <div className="text-center py-12">
-            <PieChart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No funds found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your filters or search terms
-            </p>
+            <p className="text-muted-foreground">Loading funds...</p>
           </div>
         )}
+        {isError && (
+          <div className="text-center py-12">
+            <p className="text-destructive">Failed to load funds.</p>
+          </div>
+        )}
+
+        {/* Fund Grid */}
+        {!isLoading && !isError && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {funds.map((fund, index) => (
+              <FundCard
+                key={index}
+                // Provide fallbacks for legacy-required props used in FundCard
+                type={fund.scheme_type}
+                risk={"Medium"}
+                duration={"3+ years"}
+                expectedReturn={12}
+                minInvestment={parseFloat(fund.minimum_purchase_amount)}
+                rating={4}
+                nav={parseFloat(fund.last_price)}
+                {...fund}
+                onCompare={() => {
+                  // Comparison relies on legacy allFunds; keeping disabled for server data
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        <div className="flex items-center justify-between mt-8">
+          <Button variant="outline" disabled={data?.first || page === 0} onClick={() => setPage(p => Math.max(0, p - 1))}>
+            Previous
+          </Button>
+          <div className="text-sm text-muted-foreground">
+            Page {page + 1} of {data?.totalPages ?? 1}
+          </div>
+          <Button variant="default" disabled={data?.last} onClick={() => setPage(p => p + 1)}>
+            Next
+          </Button>
+        </div>
+
+        {/* Comparison Modal (hidden for server data as we don't have tags/ratings) */}
+        {/* Keeping component mounted but not used with server data */}
+        <FundComparison
+          isOpen={false}
+          onClose={() => {}}
+          selectedFund={null as any}
+          allFunds={[] as any}
+        />
       </div>
     </div>
   );
