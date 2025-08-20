@@ -81,53 +81,7 @@ export default function MutualFunds() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowFilters(!showFilters)}
-              className="sm:w-auto"
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-            </Button>
           </div>
-
-          {/* Filter Panel */}
-          {showFilters && (
-            <Card className="p-6 bg-gradient-card">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold text-foreground mb-3">Risk Level</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {riskLevels.map(risk => (
-                      <Badge
-                        key={risk}
-                        variant={selectedRisk.includes(risk) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => toggleRisk(risk)}
-                      >
-                        {risk} Risk
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground mb-3">Investment Duration</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {durations.map(duration => (
-                      <Badge
-                        key={duration}
-                        variant={selectedDuration.includes(duration) ? "default" : "outline"}
-                        className="cursor-pointer"
-                        onClick={() => toggleDuration(duration)}
-                      >
-                        {duration}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          )}
         </div>
 
         {/* Category Tabs */}

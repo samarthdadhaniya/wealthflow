@@ -202,8 +202,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground">
-                Welcome back, {user?.user_metadata?.name || user?.email?.split('@')[0] || 'Investor'}
-                {demoMode && <span className="text-accent ml-2">(Demo)</span>}
+                Welcome back, {user?.user_metadata?.name || user?.email?.split('@')[0] || 'Samarth 👋🏻'}
               </h1>
               <p className="text-muted-foreground mt-1">
                 Here's your investment overview for today
