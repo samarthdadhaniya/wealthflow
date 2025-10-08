@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { FundCard } from "@/components/funds/FundCard";
 import { FundComparison } from "@/components/funds/FundComparison";
+import { FundDetailsModal } from "@/components/funds/FundDetailsModal";
 import { 
   Search, 
   Filter, 
@@ -14,6 +15,8 @@ import {
   Target
 } from "lucide-react";
 import { useMutualFunds } from "@/hooks/useMutualFunds";
+import { mutualFundsService, type MutualFundDetailsResponse } from "@/services/mutualFundsService";
+import { useToast } from "@/hooks/use-toast";
 
 const fundCategories = [
   { name: "All Funds", count: 156 },
@@ -37,6 +40,13 @@ export default function MutualFunds() {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(12);
 
+  // Details modal state
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+  const [detailsData, setDetailsData] = useState<MutualFundDetailsResponse | null>(null);
+  const { toast } = useToast();
+
   const { data, isLoading, isError } = useMutualFunds({ page, size });
   const funds = data?.content ?? [];
 
@@ -55,6 +65,28 @@ export default function MutualFunds() {
         : [...prev, duration]
     );
   };
+
+  const handleShowDetails = useCallback(async (tradingsymbol: string) => {
+    console.log("Show Details clicked for:", tradingsymbol);
+    setDetailsOpen(true);
+    setDetailsLoading(true);
+    setDetailsError(null);
+    setDetailsData(null);
+    try {
+      const resp = await mutualFundsService.getMutualFundDetails(tradingsymbol);
+      console.log("Details API response:", resp);
+      setDetailsData(resp);
+    } catch (e: any) {
+      setDetailsError(e?.message ?? "Failed to load details");
+      toast({
+        title: "Failed to fetch details",
+        description: e?.message ?? "Please try again.",
+        variant: "destructive",
+      } as any);
+    } finally {
+      setDetailsLoading(false);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,6 +219,7 @@ export default function MutualFunds() {
                 onCompare={() => {
                   // Comparison relies on legacy allFunds; keeping disabled for server data
                 }}
+                onShowDetails={handleShowDetails}
               />
             ))}
           </div>
@@ -212,6 +245,14 @@ export default function MutualFunds() {
           onClose={() => {}}
           selectedFund={null as any}
           allFunds={[] as any}
+        />
+
+        <FundDetailsModal
+          isOpen={detailsOpen}
+          onClose={() => setDetailsOpen(false)}
+          data={detailsData}
+          isLoading={detailsLoading}
+          error={detailsError}
         />
       </div>
     </div>

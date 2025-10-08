@@ -30,6 +30,7 @@ interface FundCardProps {
   rating: number;
   nav: number;
   onCompare?: () => void;
+  onShowDetails?: (tradingsymbol: string) => void;
 }
 
 export function FundCard({
@@ -51,7 +52,8 @@ export function FundCard({
   expectedReturn,
   tags = [],
   rating,
-  onCompare
+  onCompare,
+  onShowDetails
 }: FundCardProps) {
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -217,7 +219,7 @@ export function FundCard({
         )}
 
         {/* Actions */}
-        <div className="pt-2">
+        <div className="pt-2 grid grid-cols-2 gap-2">
           <Button 
             variant="outline" 
             size="sm" 
@@ -226,6 +228,15 @@ export function FundCard({
           >
             <Info className="w-4 h-4 mr-2" />
             Compare Funds
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => onShowDetails?.(tradingsymbol)}
+          >
+            <Info className="w-4 h-4 mr-2" />
+            Show Details
           </Button>
         </div>
       </div>
