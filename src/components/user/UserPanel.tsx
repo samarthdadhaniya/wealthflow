@@ -30,9 +30,9 @@ interface UserPanelProps {
 
 // Mock user data
 const userData = {
-  name: "Priya Sharma",
-  email: "priya.sharma@email.com",
-  joinDate: "Jan 2024",
+  name: "Samarth Dadhaniya",
+  email: "samarthdadhaniya7@gmail.com",
+  joinDate: "Oct 2025",
   riskProfile: "Moderate",
   totalInvestment: 485000,
   totalReturns: 65000,

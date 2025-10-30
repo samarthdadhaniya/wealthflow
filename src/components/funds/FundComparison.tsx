@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { X, Star, TrendingUp, Target, Clock, Shield } from "lucide-react";
+import { X, Star, TrendingUp, Target, Clock, Shield, AlertCircle, CheckCircle, Info, Brain } from "lucide-react";
 
 interface Fund {
   tradingsymbol: string;
@@ -84,6 +84,72 @@ export function FundComparison({ isOpen, onClose, selectedFund, allFunds }: Fund
 
   const fundsToShow = [selectedFund, ...compareWith];
 
+  // AI-powered comparison insights
+  const generateComparisonInsights = () => {
+    if (fundsToShow.length < 2) return null;
+    
+    const insights = [];
+    
+    // Risk comparison
+    const riskLevels = fundsToShow.map(fund => {
+      if (fund.scheme_type.toLowerCase().includes('equity')) return 3;
+      if (fund.scheme_type.toLowerCase().includes('debt')) return 1;
+      return 2;
+    });
+    
+    const maxRiskIdx = riskLevels.indexOf(Math.max(...riskLevels));
+    const minRiskIdx = riskLevels.indexOf(Math.min(...riskLevels));
+    
+    if (maxRiskIdx !== minRiskIdx) {
+      insights.push({
+        type: 'risk',
+        message: `${fundsToShow[maxRiskIdx].name} has the highest risk profile, while ${fundsToShow[minRiskIdx].name} is more conservative.`,
+        icon: AlertCircle,
+        color: 'text-orange-600'
+      });
+    }
+    
+    // NAV comparison
+    const navs = fundsToShow.map(fund => parseFloat(fund.last_price));
+    const maxNavIdx = navs.indexOf(Math.max(...navs));
+    const minNavIdx = navs.indexOf(Math.min(...navs));
+    
+    insights.push({
+      type: 'nav',
+      message: `${fundsToShow[maxNavIdx].name} has the highest current NAV at ₹${navs[maxNavIdx].toFixed(4)}, while ${fundsToShow[minNavIdx].name} has the lowest at ₹${navs[minNavIdx].toFixed(4)}.`,
+      icon: TrendingUp,
+      color: 'text-green-600'
+    });
+    
+    // Investment amount comparison
+    const minInvestments = fundsToShow.map(fund => parseFloat(fund.minimum_purchase_amount));
+    const lowestMinIdx = minInvestments.indexOf(Math.min(...minInvestments));
+    
+    if (Math.max(...minInvestments) > Math.min(...minInvestments)) {
+      insights.push({
+        type: 'investment',
+        message: `${fundsToShow[lowestMinIdx].name} has the lowest minimum investment requirement at ₹${minInvestments[lowestMinIdx].toLocaleString('en-IN')}.`,
+        icon: Target,
+        color: 'text-blue-600'
+      });
+    }
+    
+    // Scheme type recommendation
+    const schemeTypes = [...new Set(fundsToShow.map(fund => fund.scheme_type))];
+    if (schemeTypes.length > 1) {
+      insights.push({
+        type: 'diversification',
+        message: `You're comparing different investment strategies: ${schemeTypes.join(', ')}. Consider your risk tolerance and investment horizon.`,
+        icon: Shield,
+        color: 'text-purple-600'
+      });
+    }
+    
+    return insights;
+  };
+
+  const comparisonInsights = generateComparisonInsights();
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
@@ -118,6 +184,29 @@ export function FundComparison({ isOpen, onClose, selectedFund, allFunds }: Fund
                     </div>
                   </Card>
                 ))}
+              </div>
+            </Card>
+          )}
+
+          {/* AI Comparison Insights */}
+          {comparisonInsights && comparisonInsights.length > 0 && (
+            <Card className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-l-blue-500">
+              <div className="flex items-center gap-2 mb-3">
+                <Brain className="w-5 h-5 text-blue-600" />
+                <h3 className="font-semibold text-lg">AI Comparison Insights</h3>
+              </div>
+              <div className="space-y-3">
+                {comparisonInsights.map((insight, idx) => {
+                  const Icon = insight.icon;
+                  return (
+                    <div key={idx} className="flex items-start gap-3 p-3 bg-white/60 rounded-lg">
+                      <Icon className={`w-5 h-5 ${insight.color} mt-0.5 flex-shrink-0`} />
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-700 leading-relaxed">{insight.message}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </Card>
           )}
@@ -384,6 +473,58 @@ export function FundComparison({ isOpen, onClose, selectedFund, allFunds }: Fund
                   </div>
                 </div>
               )}
+
+              {/* Investment Recommendation Summary */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-base text-foreground border-b pb-2">Investment Recommendations</h4>
+                <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${fundsToShow.length}, 1fr)` }}>
+                  {fundsToShow.map((fund, index) => (
+                    <Card key={index} className="p-4 bg-gradient-to-br from-gray-50 to-gray-100">
+                      <div className="space-y-3">
+                        <h5 className="font-semibold text-sm text-center">{fund.name}</h5>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex items-center gap-2">
+                            {fund.scheme_type.toLowerCase().includes('equity') ? (
+                              <AlertCircle className="w-4 h-4 text-red-500" />
+                            ) : fund.scheme_type.toLowerCase().includes('debt') ? (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Shield className="w-4 h-4 text-yellow-500" />
+                            )}
+                            <span className="font-medium">
+                              {fund.scheme_type.toLowerCase().includes('equity') ? 'High Growth Potential' :
+                               fund.scheme_type.toLowerCase().includes('debt') ? 'Stable Income Focus' :
+                               'Balanced Approach'}
+                            </span>
+                          </div>
+                          <div className="text-muted-foreground">
+                            <strong>Best for:</strong> {' '}
+                            {fund.scheme_type.toLowerCase().includes('equity') ? 
+                              'Long-term wealth creation, SIP investors with 5+ year horizon' :
+                             fund.scheme_type.toLowerCase().includes('debt') ? 
+                              'Conservative investors seeking regular income' :
+                              'Balanced portfolios with moderate risk appetite'}
+                          </div>
+                          <div className="text-muted-foreground">
+                            <strong>Min Investment:</strong> ₹{parseFloat(fund.minimum_purchase_amount).toLocaleString('en-IN')}
+                          </div>
+                          <div className="pt-2 border-t">
+                            <Badge 
+                              className={`text-xs ${
+                                fund.purchase_allowed === '1' ? 
+                                'bg-green-100 text-green-800' : 
+                                'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {fund.purchase_allowed === '1' ? '✓ Available for Purchase' : '✗ Purchase Closed'}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

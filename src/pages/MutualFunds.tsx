@@ -15,7 +15,7 @@ import {
   Target
 } from "lucide-react";
 import { useMutualFunds } from "@/hooks/useMutualFunds";
-import { mutualFundsService, type MutualFundDetailsResponse } from "@/services/mutualFundsService";
+import { mutualFundsService, type MutualFundDetailsResponse, type MutualFund } from "@/services/mutualFundsService";
 import { useToast } from "@/hooks/use-toast";
 
 const fundCategories = [
@@ -37,6 +37,7 @@ export default function MutualFunds() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [selectedFundForComparison, setSelectedFundForComparison] = useState<MutualFund | null>(null);
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(12);
 
@@ -217,7 +218,8 @@ export default function MutualFunds() {
                 nav={parseFloat(fund.last_price)}
                 {...fund}
                 onCompare={() => {
-                  // Comparison relies on legacy allFunds; keeping disabled for server data
+                  setSelectedFundForComparison(fund);
+                  setShowComparison(true);
                 }}
                 onShowDetails={handleShowDetails}
               />
@@ -238,13 +240,15 @@ export default function MutualFunds() {
           </Button>
         </div>
 
-        {/* Comparison Modal (hidden for server data as we don't have tags/ratings) */}
-        {/* Keeping component mounted but not used with server data */}
+        {/* Fund Comparison Modal */}
         <FundComparison
-          isOpen={false}
-          onClose={() => {}}
-          selectedFund={null as any}
-          allFunds={[] as any}
+          isOpen={showComparison}
+          onClose={() => {
+            setShowComparison(false);
+            setSelectedFundForComparison(null);
+          }}
+          selectedFund={selectedFundForComparison}
+          allFunds={funds}
         />
 
         <FundDetailsModal
